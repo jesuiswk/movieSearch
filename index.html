@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="movieApp">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title></title>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-cookies.js"></script>
+  <style media="screen">
+    .sortorder:after {
+      content: '\25b2';
+    }
+    .sortorder.reverse:after {
+      content: '\25bc';
+    }
+  </style>
+</head>
+<body>
+  <div ng-controller="MoviesController as movieList">
+    <div>
+      I want show movies with critical score from <input type="number" ng-model="minCriticsScore" min="-2" max="100"> to <input type="number" ng-model="maxCriticsScore" min="-2" max="100">
+    </div>
+    <div>
+      I want show movies with audience score from <input type="number" ng-model="minAudienceScore" min="-2" max="100"> to  <input type="number" ng-model="maxAudienceScore" min="-2" max="100">
+    </div>
+    <div>
+      I want show movies from <input type="date" ng-model="ealiestReleaseDate"> to <input type="date" ng-model="latestReleaseDate">
+    </div>
+    <table class="movieList">
+      <tr>
+        <th ng-click="order('title')">
+          Title <span class="sortorder" ng-show="predicate === 'title'" ng-class="{reverse:reverse}"></span>
+        </th>
+        <th ng-click="order('release_dates.theater')">
+          Release Date <span class="sortorder" ng-show="predicate === 'release_dates.theater'" ng-class="{reverse:reverse}"></span>
+        </th>
+        <th ng-click="order('ratings.critics_score')">
+          Critics Score <span class="sortorder" ng-show="predicate === 'ratings.critics_score'" ng-class="{reverse:reverse}"></span>
+        </th>
+        <th ng-click="order('ratings.audience_score')">
+          Audience Score <span class="sortorder" ng-show="predicate === 'ratings.audience_score'" ng-class="{reverse:reverse}"></span>
+        </th>
+        <th>
+        </th>
+      </tr>
+      <tr ng-repeat="movie in movies
+        | orderBy:predicate:reverse
+        | filter: compareMinCriticsScore(minCriticsScore)
+        | filter: compareMaxCriticsScore(maxCriticsScore)
+        | filter: compareMinAudienceScore(minAudienceScore)
+        | filter: compareMaxAudienceScore(maxAudienceScore)
+        | filter: compareEarliestReleaseDate(ealiestReleaseDate)
+        | filter: compareLatestReleaseDate(latestReleaseDate)">
+        <td ng-mouseenter="loadMovie(movie)">{{movie.title}}</td>
+        <td>{{movie.release_dates.theater}}</td>
+        <td>{{movie.ratings.critics_score}}</td>
+        <td>{{movie.ratings.audience_score}}</td>
+        <td ng-click="favorite(movie.id)">
+          {{ favoriteMovies.indexOf(movie.id) === -1 ? "Favorite" : "Unfavorite"}}
+        </td>
+      </tr>
+    </table>
+    <div class="movieDetail" style="position:fixed;left:800px;top:100px;">
+      <div class="title">
+        Title: {{selectedMovie.title}}
+      </div>
+      <img ng-src={{selectedMovie.posters.profile}} >
+      <div class="releaseDate">
+        Release Date: {{selectedMovie.release_dates.theater | date: 'yyyy-MM-dd'}}
+      </div>
+      <div class="casts">
+        Cast:
+        <div ng-repeat="cast in selectedMovie.abridged_cast">
+          {{cast.name}} {{(cast.characters[0]) ? "as "+cast.characters[0] : ""}}
+        </div>
+      </div>
+    </div>
+  </div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script type="text/javascript" src="script.js">
+
+</script>
+</body>
+</html>
